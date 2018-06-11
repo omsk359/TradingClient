@@ -3,6 +3,12 @@ import {ApiService} from "../api.service";
 import _ from 'lodash';
 import {Store} from "@ngrx/store";
 import {BalancesLoad, CcxtActionTypes} from "../actions";
+import {AppState} from "../reducers";
+import {BalanceState} from "../reducers";
+import {LoadState} from "../reducers";
+import {map} from "rxjs/operators";
+import {Observable} from "rxjs/internal/Observable";
+import {Subscription} from "rxjs/internal/Subscription";
 
 @Component({
   selector: 'app-portfolio',
@@ -13,27 +19,29 @@ export class PortfolioComponent implements OnInit {
 
   objectKeys = Object.keys;
 
-  balances: any;
-  balances_no0: any = {};
+  balances: {[exchange: string]: BalanceState};
+  balancesPositive: {[exchange: string]: BalanceState} = {};
 
-  balancesLoad: any;
+  balancesLoad$: Observable<LoadState>;
+  ccxtSub: Subscription;
 
-  constructor(private api: ApiService, private store: Store<any>) { }
+  constructor(private api: ApiService, private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.api.ccxt$.subscribe((data: any) => {
-      console.log('ccxt$.subscribe', data);
-      this.balances = data.balances;
-      this.balances_no0 = {};
-      _.each(this.balances, (balances, name) => {
-        this.balances_no0[name] = _.chain(balances).map((b, sym) => Object.assign({sym}, b)).filter(b => b.total > 0).value();
+    this.ccxtSub = this.api.ccxt$.subscribe(({balances}) => {
+      this.balances = balances;
+      this.balancesPositive = {};
+      _.each(this.balances, (balances, exchange) => {
+        this.balancesPositive[exchange] = _.filter(balances, b => b.total > 0);
       });
     });
-    this.api.loading$.subscribe((data: any) => {
-      this.balancesLoad = data[CcxtActionTypes.BalancesLoad];
-    });
+    this.balancesLoad$ = this.api.loading$.pipe(map(data => data[CcxtActionTypes.BalancesLoad]));
 
     this.loadBalances();
+  }
+
+  ngOnDestroy() {
+    this.ccxtSub && this.ccxtSub.unsubscribe();
   }
 
   loadBalances() {

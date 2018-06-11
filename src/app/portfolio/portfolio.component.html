@@ -1,8 +1,18 @@
-<app-loading [load]="balancesLoad" (refresh)="loadBalances()">
-  <div *ngIf="balances_no0">
-    <ul *ngFor="let exName of objectKeys(balances_no0)">
+<app-loading [load]="balancesLoad$ | async" (refresh)="loadBalances()">
+  <div *ngIf="balancesPositive">
+    <ul *ngFor="let exName of objectKeys(balancesPositive)">
       <h4>{{exName}}</h4>
-      <li *ngFor="let b of balances_no0[exName]">{{b.sym}} Total {{b.total}}</li>
+      <li *ngFor="let market of objectKeys(balancesPositive[exName])">
+        {{market}} Total {{balancesPositive[exName][market].total}}
+      </li>
     </ul>
   </div>
 </app-loading>
+<!--<app-loading [load]="balancesLoad" (refresh)="loadBalances()">-->
+  <!--<div *ngIf="balancesPositive">-->
+    <!--<ul *ngFor="let exName of objectKeys(balancesPositive)">-->
+      <!--<h4>{{exName}}</h4>-->
+      <!--<li *ngFor="let b of balancesPositive[exName]">{{b.market}} Total {{b.total}}</li>-->
+    <!--</ul>-->
+  <!--</div>-->
+<!--</app-loading>-->
