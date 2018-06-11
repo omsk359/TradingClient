@@ -1,0 +1,31 @@
+<div>
+  <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="start center">
+    <app-loading [load]="exchangesLoad$ | async" (refresh)="loadExchanges()">
+      <mat-form-field>
+        <mat-select [(ngModel)]="exchange" (selectionChange)="loadMarkets($event.value)" placeholder="Exchange">
+          <mat-option *ngFor="let ex of exchanges" [value]="ex">{{ex}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </app-loading>
+
+    <app-loading [load]="marketsLoad$ | async" (refresh)="loadMarkets(exchange)">
+      <mat-form-field *ngIf="markets[exchange]">
+        <mat-select #selectMarket placeholder="Market" [(ngModel)]="market">
+          <mat-option *ngFor="let name of markets[exchange]" [value]="name">{{name}}</mat-option>
+          <!--<mat-option *ngFor="let name of objectKeys(markets[exchange])" [value]="name">{{name}}</mat-option>-->
+        </mat-select>
+      </mat-form-field>
+    </app-loading>
+
+    <button *ngIf="market" (click)="addTab()" mat-icon-button matTooltip="Add algo" color="primary"><mat-icon>add</mat-icon></button>
+  </div>
+
+  <div *ngFor="let algo of algoList$ | async">
+    <button (click)="delAlgoConfirm(algo)" mat-icon-button matTooltip="Delete" color="primary"><mat-icon>delete</mat-icon></button>
+    <button (click)="openAlgo.emit(algo)" mat-icon-button matTooltip="Open" color="primary"><mat-icon>open_in_new</mat-icon></button>
+
+    <button *ngIf="algo.data.state==='STOP'" (click)="resumeAlgo.emit(algo._id)" mat-icon-button matTooltip="Resume" color="primary"><mat-icon>play_arrow</mat-icon></button>
+    <button *ngIf="algo.data.state==='RUN'" (click)="stopAlgo.emit(algo._id)" mat-icon-button matTooltip="Stop" color="primary"><mat-icon>pause</mat-icon></button>
+    {{algo.data.state}} - {{algo.data.exchange}} - {{algo.data.market}} -  {{algo | json}}
+  </div>
+</div>

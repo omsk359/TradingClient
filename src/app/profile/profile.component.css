@@ -1,0 +1,9 @@
+:host > div{
+  padding: 15px;
+}
+.add-ex {
+  padding: 20px 0;
+}
+mat-form-field {
+  width: 250px;
+}

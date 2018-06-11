@@ -1,0 +1,6 @@
+.flex-spacer {
+  flex: 1 1 auto;
+}
+nav a {
+  padding: 10px;
+}

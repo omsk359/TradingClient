@@ -1,0 +1,108 @@
+<div fxLayout="row" fxLayoutAlign="space-around stretch" fxLayoutGap="1%" class="cards-row">
+
+  <mat-card fxFlex="0 1 20%">
+    <mat-card-header>
+      <mat-card-title>Market info</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-market-info [tick]="tick" [marketInfo]="marketInfo"
+                       [baseCurrency]="baseCurrency" [partnerCurrency]="partnerCurrency" [balances]="balances"
+                       [priceFmt]="priceFmt" [amountFmt]="amountFmt"
+                       (loadBalances)="loadBalances()" (loadMarketInfo)="loadMarketInfo()" (loadTick)="loadTick()">
+      </app-market-info>
+    </mat-card-content>
+    <mat-card-actions>
+      <div fxLayout="row" fxLayoutGap="15px">
+        <button (click)="loadBalances()" [disabled]="balances.load.loading" mat-icon-button matTooltip="Update" color="primary" [style.width]="'auto'"><mat-icon>update</mat-icon>Balance</button>
+        <button (click)="loadTick()" [disabled]="tick.load.loading" mat-icon-button matTooltip="Update" color="primary" [style.width]="'auto'"><mat-icon>update</mat-icon>Price</button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card fxFlex="0 1 20%">
+    <mat-card-header>
+      <mat-card-title>Open orders</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-loading [load]="myOrders.load" (refresh)="loadMyOrders()" spinnerDiameter="30">
+        <app-my-orders #myOrdersRef [myOrders]="myOrders" [amountFmt]="amountFmt" [priceFmt]="priceFmt" (delOrder)="delOrder($event)"></app-my-orders>
+      </app-loading>
+    </mat-card-content>
+    <mat-card-actions>
+      <button (click)="loadMyOrders()" [disabled]="myOrders.load.loading" mat-icon-button matTooltip="Update" color="primary"><mat-icon>update</mat-icon>Update</button>
+    </mat-card-actions>
+  </mat-card>
+
+
+  <mat-card fxFlex="0 1 25%">
+    <mat-card-header>
+      <mat-card-title>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div *ngIf="algo?.data">Algo state ({{algo?.data?.state}})</div>
+          <div fxFlex="1 1 auto"></div>
+          <!--<button *ngIf="!algo?.data?.state" (click)="start()" mat-icon-button matTooltip="Start" color="primary"><mat-icon>play_circle_outline</mat-icon></button>-->
+          <button *ngIf="algo?.data?.state==='STOP'" (click)="restore()" mat-icon-button matTooltip="Resume" color="primary"><mat-icon>play_arrow</mat-icon></button>
+          <button *ngIf="algo?.data?.state==='RUN'" (click)="stop()" mat-icon-button matTooltip="Suspend" color="primary"><mat-icon>pause</mat-icon></button>
+        </div>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="algo?.data; else bigStartButton">
+        <app-algo-state [algo]="algo?.data" [priceFmt]="priceFmt" [amountFmt]="amountFmt"
+                        (delLvl)="delLvl($event)"
+                        (mouseEnterLvl)="myOrdersRef.highlightOrder($event._order_id)"
+                        (mouseLeaveLvl)="myOrdersRef.clearOrderHighlight($event._order_id)">
+        </app-algo-state>
+      </div>
+      <ng-template #bigStartButton>
+        <button fxFlexFill *ngIf="!algo?.data?.state" (click)="start(paramsManager.cfg)" mat-raised-button color="primary">Start trading</button>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+
+
+  <mat-card fxFlex="0 1 20%">
+    <mat-card-header><mat-card-title>{{market}}</mat-card-title></mat-card-header>
+    <mat-card-content>
+
+      <app-loading [load]="orderbook.load" (refresh)="loadOrderbook()" spinnerDiameter="50">
+        <app-orderbook [orderbook]="orderbook" [priceFmt]="priceFmt" [amountFmt]="amountFmt"></app-orderbook>
+      </app-loading>
+
+    </mat-card-content>
+    <mat-card-actions>
+      <button (click)="loadOrderbook()" [disabled]="orderbook.load.loading"
+              mat-icon-button matTooltip="Update" color="primary">
+        <mat-icon>update</mat-icon>Update
+      </button>
+    </mat-card-actions>
+    </mat-card>
+
+</div>
+
+<mat-tab-group>
+  <mat-tab label="Options">
+
+    <app-trading-params-manager #paramsManager
+                                [tradingParams]="tradingParams$ | async"
+                                [enableApplyBtn]="algo?.data?.state=='RUN'"
+                                (applyCfg)="updateCfg($event)">
+    </app-trading-params-manager>
+
+  </mat-tab>
+  <mat-tab label="Log">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title><button (click)="loadLog()" mat-raised-button color="primary">Load full log</button></mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+
+        <mat-form-field appearance="standard" fxFlexFill>
+          <textarea [value]="msgs?.join('\n')" readonly matInput cdkTextareaAutosize cdkAutosizeMaxRows="50"></textarea>
+        </mat-form-field>
+
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+</mat-tab-group>
+

@@ -1,0 +1,9 @@
+:host > div {
+  height: calc(100vh - 65px);
+}
+.login-box {
+  width: 25em;
+}
+.login-box button {
+  margin-top: 10px;
+}

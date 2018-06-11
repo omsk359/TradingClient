@@ -1,0 +1,26 @@
+<mat-tab-group [(selectedIndex)]="tabIndex">
+  <mat-tab label="AlgoList">
+    <app-algo-list
+                   (resumeAlgo)="resumeAlgo($event)"
+                   (stopAlgo)="stopAlgo($event)"
+                   (openAlgo)="openAlgo($event); tabIndex=tabs.length"
+                   (delAlgo)="delAlgo($event)"
+                   (addTab)="addTab($event); tabIndex=tabs.length">
+    </app-algo-list>
+  </mat-tab>
+  <mat-tab *ngFor="let tab of tabs; let i=index;">
+    <ng-template mat-tab-label>
+      <span fxLayout="row">
+        <div>
+          <span class="tab-title-up">{{tab.market}}</span><br/><span class="tab-title-bottom">{{tab.exchange}}</span>
+        </div>
+        <button (click)="closeTab(i); $event.stopPropagation()" mat-icon-button matTooltip="Close" color="primary"><mat-icon>close</mat-icon></button>
+      </span>
+    </ng-template>
+    <app-trading-detail [market]="tab.market" [exchange]="tab.exchange" [algoId]="tab.algoId"
+                        (startAlgo)="startAlgo($event, i)"
+                        (resumeAlgo)="resumeAlgo($event)"
+                        (stopAlgo)="stopAlgo($event)">
+    </app-trading-detail>
+  </mat-tab>
+</mat-tab-group>

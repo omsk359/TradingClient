@@ -1,0 +1,43 @@
+<div>
+  <div fxLayout="column">
+    <div *ngFor="let item of userExchanges$ | async">
+      <div fxLayout="row" fxLayoutGap="15px" fxLayoutAlign="start center">
+        <strong>{{item.name | titlecase}}:</strong>
+        <mat-form-field appearance="standard">
+          <mat-label>Api Key</mat-label>
+          <input [(ngModel)]="item.ex.apiKey" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="standard">
+          <mat-label>Secret Key</mat-label>
+          <input [(ngModel)]="item.ex.secret" matInput>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <hr/>
+  <div class="add-ex">
+    <strong>Add exchange API Keys:</strong><br/>
+
+    <div fxLayout="row" fxLayoutGap="15px" fxLayoutAlign="start center">
+
+      <app-loading [load]="exchangesLoad$ | async" (refresh)="loadExchanges()">
+        <mat-form-field>
+          <mat-select [(ngModel)]="exchange" placeholder="Exchange">
+            <mat-option *ngFor="let ex of exchanges$ | async" [value]="ex">{{ex}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </app-loading>
+
+      <mat-form-field appearance="standard">
+        <mat-label>Api Key</mat-label>
+        <input [(ngModel)]="apiKey" matInput>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Secret Key</mat-label>
+        <input [(ngModel)]="secret" matInput>
+      </mat-form-field>
+      <button (click)="addExchange()" mat-icon-button matTooltip="Add" color="primary"><mat-icon>add</mat-icon></button>
+      <button (click)="saveUserData()" mat-raised-button matTooltip="Save" color="primary"><mat-icon>save</mat-icon>Save</button>
+    </div>
+  </div>
+</div>

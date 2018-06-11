@@ -1,0 +1,27 @@
+<mat-toolbar>
+  <span>{{title}}</span>
+
+  <nav mat-tab-nav-bar>
+    <a mat-tab-link
+       *ngFor="let link of navLinks"
+       [routerLink]="link.path"
+       routerLinkActive #rla="routerLinkActive"
+       [active]="rla.isActive">
+      {{link.label}}
+    </a>
+  </nav>
+
+  <span class="flex-spacer"></span>
+
+  <div *ngIf="user">
+
+    <button mat-button [matMenuTriggerFor]="menu">{{user.email}}</button>
+    <mat-menu #menu="matMenu">
+      <button (click)="logout()" mat-menu-item>Logout</button>
+    </mat-menu>
+  </div>
+</mat-toolbar>
+
+<div>
+  <router-outlet></router-outlet>
+</div>

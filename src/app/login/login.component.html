@@ -1,0 +1,21 @@
+<div fxLayout="column" fxLayoutAlign="start center">
+
+  <div fxFlex="2 1 auto"></div>
+
+  <div fxLayout="column" class="login-box">
+    <mat-form-field appearance="standard">
+      <mat-label>Email</mat-label>
+      <input [(ngModel)]="user.email" matInput>
+    </mat-form-field>
+    <mat-form-field appearance="standard">
+      <mat-label>Password</mat-label>
+      <input type="password" (keyup.enter)="login()" [(ngModel)]="user.password" matInput>
+    </mat-form-field>
+
+    <button (click)="login()" mat-raised-button color="primary">Login</button>
+    <button (click)="signUp()" mat-raised-button color="accent">Sign up</button>
+  </div>
+
+  <div fxFlex="5 1 auto"></div>
+
+</div>

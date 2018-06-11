@@ -1,0 +1,8 @@
+<app-loading [load]="balancesLoad" (refresh)="loadBalances()">
+  <div *ngIf="balances_no0">
+    <ul *ngFor="let exName of objectKeys(balances_no0)">
+      <h4>{{exName}}</h4>
+      <li *ngFor="let b of balances_no0[exName]">{{b.sym}} Total {{b.total}}</li>
+    </ul>
+  </div>
+</app-loading>
